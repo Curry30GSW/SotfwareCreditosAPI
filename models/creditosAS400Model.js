@@ -3,9 +3,11 @@ const { executeQuery } = require('../config/db');
 const creditosAS400 = {
     async getCreditosAS400() {
         try {
+            const [lapsoInicio, lapsoFin] = obtenerRangoFechasActual();
             const tableACP05 = `COLIB.ACP05`;
             const tableACP06 = `COLIB.ACP06`;
             const tableACP13 = `COLIB.ACP13`;
+
 
             const queryCreditosData = `
                 SELECT 
@@ -40,10 +42,10 @@ const creditosAS400 = {
                 WHERE 
                     ${tableACP13}.CAPI13 > 0
                     AND ${tableACP13}.TCRE13 <> '74'
-                    AND ${tableACP13}.LAPI13 BETWEEN 12501 AND 12502
+                    AND ${tableACP13}.FECI13 BETWEEN ? AND ?
             `;
 
-            const result = await executeQuery(queryCreditosData);
+            const result = await executeQuery(queryCreditosData, [lapsoInicio, lapsoFin]);
             return result;
         } catch (error) {
             console.error('Error al obtener créditos:', error);
@@ -89,6 +91,30 @@ function obtenerRangoFechasActual() {
 
     return [fechaInicio, fechaFin];
 }
+
+function obtenerRangoLapsos() {
+    const fechaActual = new Date();
+
+    // Obtener año y mes actual
+    const año = fechaActual.getFullYear();
+    const mes = fechaActual.getMonth() + 1; // Enero es 0, por eso sumamos 1
+
+    // Calcular el lapso del mes anterior
+    let mesAnterior = mes - 1;
+    let añoAnterior = año;
+    if (mesAnterior === 0) {
+        mesAnterior = 12;
+        añoAnterior -= 1;
+    }
+
+    // Formato de lapso (AAMM) → 202403 para marzo 2024
+    const lapsoInicio = parseInt(`${añoAnterior.toString().slice(-2)}${mesAnterior.toString().padStart(2, '0')}`) + 10000;
+    const lapsoFin = parseInt(`${año.toString().slice(-2)}${mes.toString().padStart(2, '0')}`) + 10000;
+
+    return [lapsoInicio, lapsoFin];
+}
+
+
 
 module.exports = creditosAS400;
 
