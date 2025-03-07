@@ -1,7 +1,9 @@
 const express = require('express');
+const session = require('express-session');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { connectToAS400, connectToPagares } = require('./config/db');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const creditosAS400Routes = require('./routes/creditosAS400Routes');
 const creditosPagaresRoutes = require('./routes/creditosPagaresRoutes');
@@ -11,18 +13,25 @@ const creditosPagadosRoutes = require('./routes/creditosPagadosRoutes');
 const analisisRoutes = require('./routes/analisisRoutes');
 const analisisConteo = require('./routes/analisisConteoRoutes');
 const detallesAnalisis = require('./routes/detallesAnalisisRoutes');
+const authRoutes = require('./middlewares/authRoutes');
 
 dotenv.config();
 
 // Configuración de Express
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
 
-// Habilitar CORS para permitir solicitudes desde el frontend
+
+
 app.use(cors({
-    origin: "http://127.0.0.1:5500", // Especifica el origen permitido
-    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos HTTP permitidos
-    allowedHeaders: ["Content-Type", "Authorization"] // Headers permitidos
+    origin: "http://127.0.0.1:5500", // Debes usar el frontend correcto
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true  // 🛑 Habilita las cookies en CORS
 }));
+
+
 
 // Ruta raíz para verificar que la API está funcionando
 app.get('/', (req, res) => {
@@ -54,6 +63,8 @@ app.use('/api', analisisRoutes);
 app.use('/api', analisisConteo);
 
 app.use('/api', detallesAnalisis);
+
+app.use('/auth', authRoutes);
 
 // Validar conexión a la base de datos y arrancar el servidor
 const startServer = async () => {
