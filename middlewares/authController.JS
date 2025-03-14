@@ -27,7 +27,7 @@ const AuthController = {
 
                 },
                 process.env.JWT_SECRET,
-                { expiresIn: '1h' }
+                { expiresIn: '3h' }
             );
 
             res.json({ message: "Login exitoso", token, name: user.name });

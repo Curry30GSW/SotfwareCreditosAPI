@@ -3,7 +3,7 @@ const { executeQuery } = require('../config/db');
 function obtenerRangoFechasActual() {
     const hoy = new Date();
     const añoAs400 = `1${(hoy.getFullYear() - 1900).toString().slice(-2)}`;
-    const mesStr = String(hoy.getMonth() + 1).padStart(2, '0'); // Se suma 1 porque getMonth() es base 0
+    const mesStr = String(hoy.getMonth() + 1).padStart(2, '0');
     const diaStr = String(hoy.getDate()).padStart(2, '0');
 
     const fechaInicio = `1241101`; // Fecha fija
@@ -29,6 +29,25 @@ function obtenerRangoFechasMesAnterior() {
     let fechaFin = `${añoAs400}${mesStr}31`;
 
     return [fechaInicio, fechaFin];
+}
+
+function obtenerUltimosSeisMeses() {
+    const hoy = new Date();
+    let meses = [];
+
+    for (let i = 1; i <= 7; i++) {
+        let fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+        let fechaFin = new Date(hoy.getFullYear(), hoy.getMonth() - i + 1, 0); // Último día del mes
+
+        let añoAs400 = `1${(fechaInicio.getFullYear() - 1900).toString().slice(-2)}`;
+        let mes = String(fechaInicio.getMonth() + 1).padStart(2, '0');
+        let inicio = `${añoAs400}${mes}01`;
+        let fin = `${añoAs400}${mes}${String(fechaFin.getDate()).padStart(2, '0')}`;
+
+        meses.push(inicio, fin);
+    }
+
+    return meses;
 }
 
 const analisisModel = {
@@ -69,7 +88,7 @@ const analisisModel = {
             // Agregar el Score al resultado del análisis
             resultAnalisis = resultAnalisis.map(analisis => ({
                 ...analisis,
-                Score: scoresMap[String(parseInt(analisis.CEDULA, 10))] || 'NO TIENE CONSULTA REALIZADA'
+                Score: scoresMap[String(parseInt(analisis.CEDULA, 10))] || 'F/D'
             }));
 
             return { analisis: resultAnalisis };
@@ -122,8 +141,6 @@ const analisisModel = {
             `;
 
             const resultUltimoConsecutivo = await executeQuery(queryUltimoConsecutivo, [fechaInicio, fechaFin]);
-
-            // Renombrar la clave "ULTIMO_CONSECUTIVO" a "ULTIMO_CONSECUTIVONOW"
             const dataTransformada = resultUltimoConsecutivo.map(item => ({
                 AGEN23: item.AGEN23,
                 ULTIMO_CONSECUTIVONOW: item.ULTIMO_CONSECUTIVO
@@ -134,11 +151,54 @@ const analisisModel = {
             console.error('Error al obtener el último consecutivo:', error);
             throw error;
         }
+    },
+
+    async getConsecutivosUltimosMeses(mesInt) {
+        try {
+            const fechas = obtenerUltimosSeisMeses();
+            const fechaInicio = fechas[mesInt * 2];
+            const fechaFin = fechas[mesInt * 2 + 1];
+
+            const queryConsecutivosMes = `
+                SELECT ACP03.DESC03, ACP23.AGEN23, 
+                       MIN(ACP23.NANA23) AS PRIMER_CONSECUTIVO, 
+                       MAX(ACP23.NANA23) AS ULTIMO_CONSECUTIVO
+                FROM COLIB.ACP03 ACP03
+                INNER JOIN COLIB.ACP23 ACP23 ON ACP03.DIST03 = ACP23.AGEN23
+                WHERE ACP23.FECH23 BETWEEN ? AND ?
+                AND ACP23.STAT23 IN ('0','1','2','3')
+                AND ACP23.AGEN23 IN ('13','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48',
+                                     '68','70','73','74','76','77','78','80','81','82','83','84','85','86','87','88','89','90','91','92',
+                                     '93','94','95','96','97','98')
+                GROUP BY ACP03.DESC03, ACP23.AGEN23
+                ORDER BY ACP23.AGEN23
+            `;
+
+            const resultConsecutivosMes = await executeQuery(queryConsecutivosMes, [fechaInicio, fechaFin]);
+
+            const dataTransformada = resultConsecutivosMes.map(item => ({
+                DESC03: item.DESC03,
+                AGEN23: item.AGEN23,
+                primer_consecutivoMes: item.PRIMER_CONSECUTIVO,
+                ultimo_consecutivoMes: item.ULTIMO_CONSECUTIVO
+            }));
+
+            return { consecutivos: dataTransformada };
+        } catch (error) {
+            console.error('Error al obtener los consecutivos:', error);
+            throw error;
+        }
     }
+
+
 
 };
 
+
+
 module.exports = analisisModel;
+
+
 
 //FUNCION MÁS ACTUALIZADA SIN SAI
 

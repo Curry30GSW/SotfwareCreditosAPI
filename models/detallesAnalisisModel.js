@@ -52,7 +52,7 @@ async function obtenerDetallesCero(agen23) {
 
         resultados = resultados.map(registro => ({
             ...registro,
-            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "NO TIENE CONSULTA REALIZADA"
+            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "F/D"
         }));
 
         return resultados;
@@ -110,7 +110,7 @@ async function obtenerDetallesUno(agen23) {
 
         resultados = resultados.map(registro => ({
             ...registro,
-            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "NO TIENE CONSULTA REALIZADA"
+            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "F/D"
         }));
 
         return resultados;
@@ -168,7 +168,7 @@ async function obtenerDetallesDos(agen23) {
 
         resultados = resultados.map(registro => ({
             ...registro,
-            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "NO TIENE CONSULTA REALIZADA"
+            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "F/D"
         }));
 
         return resultados;

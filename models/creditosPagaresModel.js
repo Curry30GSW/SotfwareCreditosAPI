@@ -12,9 +12,13 @@ const obtenerFiltroFecha = () => {
     return { primerDia, ultimoDia };
 };
 
-const obtenerCreditosPagares = async () => {
+const obtenerCreditosPagares = async (fechaInicio, fechaFin) => {
     try {
+        // Si no se envían fechas, se usan las fechas por defecto
         const { primerDia, ultimoDia } = obtenerFiltroFecha();
+        const fechaInicioFinal = fechaInicio || primerDia;
+        const fechaFinFinal = fechaFin || ultimoDia;
+
         const query = `
             SELECT 
                 ID, NoAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, 
@@ -25,7 +29,7 @@ const obtenerCreditosPagares = async () => {
             WHERE Fcredito BETWEEN ? AND ?`;
 
         // Ejecutar consulta con ODBC
-        const resultados = await executeQuery(query, [primerDia, ultimoDia], 'PAGARES');
+        const resultados = await executeQuery(query, [fechaInicioFinal, fechaFinFinal], 'PAGARES');
         return resultados;
     } catch (error) {
         console.error('❌ Error al obtener créditos y pagarés:', error);

@@ -13,6 +13,7 @@ const creditosPagadosRoutes = require('./routes/creditosPagadosRoutes');
 const analisisRoutes = require('./routes/analisisRoutes');
 const analisisConteo = require('./routes/analisisConteoRoutes');
 const detallesAnalisis = require('./routes/detallesAnalisisRoutes');
+const analisisResumen = require('./routes/analisisResumenRoutes');
 const authRoutes = require('./middlewares/authRoutes');
 
 dotenv.config();
@@ -63,6 +64,8 @@ app.use('/api', analisisRoutes);
 app.use('/api', analisisConteo);
 
 app.use('/api', detallesAnalisis);
+
+app.use('/api', analisisResumen);
 
 app.use('/auth', authRoutes);
 
