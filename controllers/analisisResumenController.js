@@ -21,5 +21,5 @@ const obtenerDatosPorAgencia = async (req, res) => {
         res.status(500).json({ error: `Error al obtener los datos de la agencia ${req.params.agencia}` });
     }
 };
-
+//SEBAS
 module.exports = { obtenerAnalisis, obtenerDatosPorAgencia };

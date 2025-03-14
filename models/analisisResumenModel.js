@@ -85,6 +85,7 @@ const obtenerDatosPorAgenciaYFechas = async (agencia, mesInt, estado) => {
     }
 };
 
+//SEBAS
 
 console.log(obtenerUltimosSeisMeses());
 
