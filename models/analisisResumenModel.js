@@ -60,7 +60,8 @@ const obtenerDatosPorAgenciaYFechas = async (agencia, mesInt, estado) => {
             ACP05.NNIT05, 
             ACP23.CAPI23, 
             ACP23.TCRE23, 
-            ACP23.USER23, 
+            ACP23.USER23,
+            ACP23.STAT23, 
             ACP04.DESC04
         FROM 
             COLIB.ACP03 ACP03, 

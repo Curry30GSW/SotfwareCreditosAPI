@@ -1,0 +1,12 @@
+[33m191e4d9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: checkout: moving from b02200319b78e9f3ac271acd780ed8a9345aee16 to main
+[33mb022003[m HEAD@{1}: commit: PARA QUE MODIFIQUE SEBAS
+[33ma2c0085[m HEAD@{2}: reset: moving to HEAD~
+[33m5f60e09[m HEAD@{3}: commit: PARA QUE MODIFIQUE SEBAS
+[33ma2c0085[m HEAD@{4}: commit: Cambios para traer el detalle en resumen.
+[33m7251f11[m HEAD@{5}: commit: Cambios para resumen de analisis
+[33m8f3f8a7[m HEAD@{6}: commit: Permite buscar conciliación por fechas
+[33m8a9ef8a[m HEAD@{7}: commit: Cambios para el link con token
+[33mb4b4452[m HEAD@{8}: commit: Cambios en consulta para creditos desembolsados
+[33m191e4d9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{9}: checkout: moving from main to 191e4d9d2c7592d3af95124d34f01c3f8822eee2
+[33m191e4d9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{10}: Branch: renamed refs/heads/master to refs/heads/main
+[33m191e4d9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{12}: commit (initial): cambios antes de implementar las fechas
