@@ -15,6 +15,7 @@ const analisisConteo = require('./routes/analisisConteoRoutes');
 const detallesAnalisis = require('./routes/detallesAnalisisRoutes');
 const analisisResumen = require('./routes/analisisResumenRoutes');
 const authRoutes = require('./middlewares/authRoutes');
+const creditosNoRegistradosRoutes = require('./routes/creditosNoRegistradosRoutes');
 
 dotenv.config();
 
@@ -47,6 +48,9 @@ const PORT = process.env.PORT || 5000;
 //Ruta créditos desembolsados AS400
 app.use('/api', creditosAS400Routes);
 
+//RUTA CREDITOS NO REGISTRADOS
+app.use('/api', creditosNoRegistradosRoutes);
+
 //RUTA
 app.use('/api', creditosPagaresRoutes);
 
@@ -67,6 +71,7 @@ app.use('/api', detallesAnalisis);
 
 app.use('/api', analisisResumen);
 
+//Ruta Login
 app.use('/auth', authRoutes);
 
 // Validar conexión a la base de datos y arrancar el servidor

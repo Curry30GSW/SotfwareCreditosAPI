@@ -92,27 +92,27 @@ function obtenerRangoFechasActual() {
     return [fechaInicio, fechaFin];
 }
 
-function obtenerRangoLapsos() {
-    const fechaActual = new Date();
+// function obtenerRangoLapsos() {
+//     const fechaActual = new Date();
 
-    // Obtener año y mes actual
-    const año = fechaActual.getFullYear();
-    const mes = fechaActual.getMonth() + 1; // Enero es 0, por eso sumamos 1
+//     // Obtener año y mes actual
+//     const año = fechaActual.getFullYear();
+//     const mes = fechaActual.getMonth() + 1; // Enero es 0, por eso sumamos 1
 
-    // Calcular el lapso del mes anterior
-    let mesAnterior = mes - 1;
-    let añoAnterior = año;
-    if (mesAnterior === 0) {
-        mesAnterior = 12;
-        añoAnterior -= 1;
-    }
+//     // Calcular el lapso del mes anterior
+//     let mesAnterior = mes - 1;
+//     let añoAnterior = año;
+//     if (mesAnterior === 0) {
+//         mesAnterior = 12;
+//         añoAnterior -= 1;
+//     }
 
-    // Formato de lapso (AAMM) → 202403 para marzo 2024
-    const lapsoInicio = parseInt(`${añoAnterior.toString().slice(-2)}${mesAnterior.toString().padStart(2, '0')}`) + 10000;
-    const lapsoFin = parseInt(`${año.toString().slice(-2)}${mes.toString().padStart(2, '0')}`) + 10000;
+//     // Formato de lapso (AAMM) → 202403 para marzo 2024
+//     const lapsoInicio = parseInt(`${añoAnterior.toString().slice(-2)}${mesAnterior.toString().padStart(2, '0')}`) + 10000;
+//     const lapsoFin = parseInt(`${año.toString().slice(-2)}${mes.toString().padStart(2, '0')}`) + 10000;
 
-    return [lapsoInicio, lapsoFin];
-}
+//     return [lapsoInicio, lapsoFin];
+// }
 
 
 

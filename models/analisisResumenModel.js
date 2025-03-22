@@ -85,8 +85,4 @@ const obtenerDatosPorAgenciaYFechas = async (agencia, mesInt, estado) => {
         throw error;
     }
 };
-
-
-console.log(obtenerUltimosSeisMeses());
-
 module.exports = { obtenerAnalisisPorEstado, obtenerDatosPorAgenciaYFechas };
