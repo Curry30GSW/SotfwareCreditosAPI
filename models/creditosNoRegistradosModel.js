@@ -59,7 +59,7 @@ const creditosNoRegistrados = {
                     AND ${tableACP03}.DIST03 = ${tableACP05}.DIST05 
                     AND ${tableACP05}.NOMI05 = ${tableACP04}.NOMI04 
                     AND ${tableACP13}.SCAP13 >= 0
-                    AND ${tableACP13}.TCRE13 NOT IN ('74', '90', '99')
+                    AND ${tableACP13}.TCRE13 NOT IN ('74', '90', '99','60')
                     AND ${tableACP13}.FECI13 BETWEEN ? AND ?
             `;
 
