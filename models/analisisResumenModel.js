@@ -4,9 +4,18 @@ function obtenerUltimosSeisMeses() {
     const hoy = new Date();
     let meses = [];
 
-    for (let i = 1; i <= 7; i++) {
+    // Agregar el mes actual (desde el primer día hasta hoy)
+    let añoAs400 = `1${(hoy.getFullYear() - 1900).toString().slice(-2)}`;
+    let mesActual = String(hoy.getMonth() + 1).padStart(2, '0');
+    let diaHoy = String(hoy.getDate()).padStart(2, '0');
+    let inicioMesActual = `${añoAs400}${mesActual}01`;
+    let finMesActual = `${añoAs400}${mesActual}${diaHoy}`;
+    meses.push(inicioMesActual, finMesActual);
+
+    // Agregar los últimos 6 meses anteriores completos
+    for (let i = 1; i <= 6; i++) {
         let fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
-        let fechaFin = new Date(hoy.getFullYear(), hoy.getMonth() - i + 1, 0);
+        let fechaFin = new Date(hoy.getFullYear(), hoy.getMonth() - i + 1, 0); // Último día del mes
 
         let añoAs400 = `1${(fechaInicio.getFullYear() - 1900).toString().slice(-2)}`;
         let mes = String(fechaInicio.getMonth() + 1).padStart(2, '0');
@@ -15,8 +24,10 @@ function obtenerUltimosSeisMeses() {
 
         meses.push(inicio, fin);
     }
+
     return meses;
 }
+
 
 const obtenerAnalisisPorEstado = async (mesInt, estado) => {
     try {
@@ -42,6 +53,7 @@ const obtenerAnalisisPorEstado = async (mesInt, estado) => {
         throw error;
     }
 };
+
 
 const obtenerDatosPorAgenciaYFechas = async (agencia, mesInt, estado) => {
     try {
@@ -85,4 +97,8 @@ const obtenerDatosPorAgenciaYFechas = async (agencia, mesInt, estado) => {
         throw error;
     }
 };
-module.exports = { obtenerAnalisisPorEstado, obtenerDatosPorAgenciaYFechas };
+
+module.exports = {
+    obtenerAnalisisPorEstado,
+    obtenerDatosPorAgenciaYFechas
+};

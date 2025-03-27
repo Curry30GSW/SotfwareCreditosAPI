@@ -11,6 +11,7 @@ const obtenerAnalisis = async (req, res) => {
     }
 };
 
+
 const obtenerDatosPorAgencia = async (req, res) => {
     try {
         const { agencia, mes, estado } = req.params;
@@ -21,5 +22,7 @@ const obtenerDatosPorAgencia = async (req, res) => {
         res.status(500).json({ error: `Error al obtener los datos de la agencia ${req.params.agencia}` });
     }
 };
+
+
 
 module.exports = { obtenerAnalisis, obtenerDatosPorAgencia };

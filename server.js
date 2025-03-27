@@ -16,6 +16,7 @@ const detallesAnalisis = require('./routes/detallesAnalisisRoutes');
 const analisisResumen = require('./routes/analisisResumenRoutes');
 const authRoutes = require('./middlewares/authRoutes');
 const creditosNoRegistradosRoutes = require('./routes/creditosNoRegistradosRoutes');
+const agenciaRoutes = require('./routes/analisisConteoParcialRoutes');
 
 dotenv.config();
 
@@ -73,6 +74,8 @@ app.use('/api', analisisResumen);
 
 //Ruta Login
 app.use('/auth', authRoutes);
+
+app.use('/api', agenciaRoutes);
 
 // Validar conexión a la base de datos y arrancar el servidor
 const startServer = async () => {
