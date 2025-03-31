@@ -27,6 +27,7 @@ const creditosPendientesAS400 = {
                     ${tableACP26}.TCRE26, 
                     ${tableACP26}.CPTO26, 
                     ${tableACP26}.NCRE26,
+                    ${tableACP26}.FECI26,
                     ${tableACP26}.NANA26, 
                     ${tableACP26}.SCAP26, 
                     ${tableACP26}.TASA26, 
@@ -113,7 +114,7 @@ function obtenerUltimosSeisMeses() {
     const hoy = new Date();
     let meses = [];
 
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 6; i++) {
         let fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
         let fechaFin = new Date(hoy.getFullYear(), hoy.getMonth() - i + 1, 0); // Último día del mes
 

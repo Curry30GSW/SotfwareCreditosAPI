@@ -9,8 +9,6 @@ const verificarToken = (req, res, next) => {
     const token = authHeader.split(' ')[1]; // Extraer solo el token
 
 
-
-
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;

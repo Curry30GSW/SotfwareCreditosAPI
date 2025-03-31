@@ -35,7 +35,7 @@ const creditosPendientesController = {
             const { mes } = req.params;
             const mesInt = parseInt(mes, 10);
 
-            if (isNaN(mesInt) || mesInt < 0 || mesInt > 6) {
+            if (isNaN(mesInt) || mesInt < 0 || mesInt > 5) {
                 return res.status(400).json({ error: 'Mes inválido. Debe estar entre 0 y 5.' });
             }
 

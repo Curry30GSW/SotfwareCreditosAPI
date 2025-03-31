@@ -226,7 +226,7 @@ async function obtenerDetallesTres(agen23) {
 
         resultados = resultados.map(registro => ({
             ...registro,
-            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "NO TIENE CONSULTA REALIZADA"
+            Score: scoresMap[String(parseInt(registro.NNIT05, 10))] || "F/D"
         }));
 
         return resultados;
