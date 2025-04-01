@@ -37,6 +37,8 @@ const obtenerAnalisiEstadoUno = async (req, res) => {
 };
 
 
+
+
 const obtenerAnalisisFechasFijas = async (req, res) => {
     try {
         let { estado, agencia } = req.params;

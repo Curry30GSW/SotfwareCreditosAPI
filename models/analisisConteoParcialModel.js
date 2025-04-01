@@ -156,6 +156,7 @@ const obtenerDetalleAnalisisEstadoUno = async () => {
     }
 };
 
+
 const obtenerAnalisisPorEstadoConFechasDinamicas = async (estado, agencia) => {
     try {
         const [fechaInicio, fechaFin] = obtenerRangoFechas();
