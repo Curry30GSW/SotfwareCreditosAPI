@@ -1,9 +1,13 @@
 const { executeQuery } = require('../config/db');
 
 const creditosAS400 = {
-    async getCreditosAS400() {
+    async getCreditosAS400(fechaInicio = null, fechaFin = null) {
         try {
+            // Si las fechas no se reciben, usar las fechas por defecto de la función
             const [lapsoInicio, lapsoFin] = obtenerRangoFechasActual();
+            const fechaInicioFinal = fechaInicio || lapsoInicio;
+            const fechaFinFinal = fechaFin || lapsoFin;
+
             const tableACP03 = `COLIB.ACP03`;
             const tableACP04 = `COLIB.ACP04`;
             const tableACP05 = `COLIB.ACP05`;
@@ -49,7 +53,7 @@ const creditosAS400 = {
                     AND ${tableACP13}.FECI13 BETWEEN ? AND ?
             `;
 
-            let creditos = await executeQuery(queryCreditosData, [lapsoInicio, lapsoFin]);
+            let creditos = await executeQuery(queryCreditosData, [fechaInicioFinal, fechaFinFinal]);
 
             // ✅ Consultar los Scores en la base de datos Pagares (menu_datacredito)
             const queryScores = `SELECT cedula, Score FROM persona`;
