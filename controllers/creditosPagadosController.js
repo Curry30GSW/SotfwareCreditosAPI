@@ -28,10 +28,6 @@ const contarPagados = async (req, res) => {
         // Convertir las fechas al formato AS400
         const fechaInicioAS400 = formatoAS400(fechaInicioObj);  // Primer día del mes
         const fechaFinAS400 = formatoAS400(fechaFinObj);  // Fecha actual (hoy)
-
-        console.log('Fecha inicio AS400:', fechaInicioAS400);  // Debugging
-        console.log('Fecha fin AS400:', fechaFinAS400);      // Debugging
-
         const pagados = await obtenerPagados(fechaInicioAS400, fechaFinAS400);
         res.json({ pagados });
 

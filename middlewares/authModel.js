@@ -5,10 +5,10 @@ const UserModel = {
     async authenticate(email, password) {
         try {
             // Consulta con parámetros
-            const query = `SELECT email, name, password 
+            const query = `SELECT email, name, password, rol, agenciau
                FROM users 
-               WHERE LOWER(TRIM(email)) = LOWER(TRIM(?) ) 
-               AND email IN ('1132-aux@coopserp.com', 'gerencia@coopserp.com','jdseba1224@gmail.com')`;
+               WHERE LOWER(TRIM(email)) = LOWER(TRIM(?) )
+               AND email not in ('chutata18@gmail.com')`;
             const users = await executeQuery(query, [email], 'PAGARES');
 
             if (users.length === 0) {

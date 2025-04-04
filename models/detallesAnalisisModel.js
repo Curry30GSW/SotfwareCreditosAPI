@@ -242,7 +242,7 @@ function obtenerRangoFechasActual() {
     const mesStr = String(hoy.getMonth() + 1).padStart(2, '0');
     const diaStr = String(hoy.getDate()).padStart(2, '0');
 
-    const fechaInicio = `1250301`;
+    const fechaInicio = `1250401`;
     const fechaFin = `${añoAs400}${mesStr}${diaStr}`;
 
     return [fechaInicio, fechaFin];

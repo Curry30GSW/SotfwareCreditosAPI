@@ -17,20 +17,24 @@ const AuthController = {
                 return res.status(401).json({ error: "Usuario o contraseña incorrectos" });
             }
 
-            // Generar token JWT
             const token = jwt.sign(
                 {
                     id: String(user.id),
                     email: user.email,
-
-
-
+                    rol: user.rol,
+                    agenciau: user.agenciau
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: '8h' }
             );
 
-            res.json({ message: "Login exitoso", token, name: user.name });
+            res.json({
+                message: "Login exitoso",
+                token,
+                name: user.name,
+                rol: user.rol,
+                agenciau: user.agenciau
+            });
         } catch (error) {
             console.error("Error en el login:", error);
             res.status(500).json({ error: "Error interno del servidor" });
