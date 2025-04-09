@@ -1,7 +1,7 @@
 const { executeQuery } = require('../config/db');
 
 const creditosAS400 = {
-    async getCreditosAS400(fechaInicio = null, fechaFin = null) {
+    async getCreditosAS400(fechaInicio = null, fechaFin = null, agencia = null) {
         try {
             // Si las fechas no se reciben, usar las fechas por defecto de la función
             const [lapsoInicio, lapsoFin] = obtenerRangoFechasActual();
@@ -15,6 +15,16 @@ const creditosAS400 = {
             const tableACP13 = `COLIB.ACP13`;
             const tableACP23 = `COLIB.ACP23`;
 
+            let filtroAgencia = '';
+            const parametros = [fechaInicioFinal, fechaFinFinal];
+
+            // Agregar condición si se pasa la agencia
+            if (agencia) {
+                filtroAgencia = ` AND ${tableACP13}.AGOP13 = ? `;
+                parametros.push(agencia);
+            }
+
+            // Consulta de créditos en AS400 con filtro opcional por agencia
             const queryCreditosData = `
                 SELECT 
                     ${tableACP03}.DIRE03, 
@@ -48,27 +58,58 @@ const creditosAS400 = {
                     AND ${tableACP05}.NOMI05 = ${tableACP04}.NOMI04 
                     AND ${tableACP23}.NANA23 = ${tableACP13}.NANA13 
                     AND ${tableACP13}.NCTA13 = ${tableACP23}.NCTA23 
-                    AND ${tableACP05}.DIST05 = ${tableACP03}.DIST03 
+                    AND ${tableACP13}.AGOP13 = ${tableACP03}.DIST03 
                     AND ${tableACP13}.TCRE13 <> '74' 
                     AND ${tableACP13}.FECI13 BETWEEN ? AND ?
+                    ${filtroAgencia}
             `;
 
-            let creditos = await executeQuery(queryCreditosData, [fechaInicioFinal, fechaFinFinal]);
+            // Ejecutar consulta de créditos
+            let creditos = await executeQuery(queryCreditosData, parametros);
 
-            // ✅ Consultar los Scores en la base de datos Pagares (menu_datacredito)
+            // Consulta de Scores en base de datos Pagares
             const queryScores = `SELECT cedula, Score FROM persona`;
-            let scores = await executeQuery(queryScores, [], 'Pagares');
+            const scores = await executeQuery(queryScores, [], 'Pagares');
 
-            let scoresMap = {};
+            const scoresMap = {};
             scores.forEach(persona => {
                 scoresMap[String(parseInt(persona.cedula, 10))] = persona.Score;
             });
 
-            // Agregar el Score al resultado de créditos
-            creditos = creditos.map(credito => ({
-                ...credito,
-                Score: scoresMap[String(parseInt(credito.NNIT05, 10))] || 'F/D'
-            }));
+            // Consulta de Estados en base de datos Pagares (creditos_pagados)
+            const queryEstados = `
+                SELECT cuenta, pagare, estado, MedioPago, fecha_pago, usuario_pagador
+                FROM creditos_pagados
+            `;
+            const estados = await executeQuery(queryEstados, [], 'Pagares');
+
+            const estadoMap = {};
+            estados.forEach(e => {
+                const key = `${e.cuenta}-${e.pagare}`;
+                estadoMap[key] = {
+                    estado: e.estado,
+                    medioPago: e.MedioPago,
+                    fecha_pago: e.fecha_pago,
+                    usuario_pagador: e.usuario_pagador
+                };
+            });
+
+
+            // Agregar Score y Estado a cada crédito
+            creditos = creditos.map(credito => {
+                const key = `${credito.NCTA13}-${credito.NCRE13}`;
+                const estadoData = estadoMap[key];
+
+                return {
+                    ...credito,
+                    Score: scoresMap[String(parseInt(credito.NNIT05, 10))] || 'F/D',
+                    Estado: estadoData ? estadoData.estado : 'Desconocido',
+                    MedioPago: estadoData ? estadoData.medioPago : 'No registrado',
+                    fecha_pago: estadoData ? estadoData.fecha_pago : 'No registrado',
+                    usuario_pagador: estadoData ? estadoData.usuario_pagador : 'No registrado'
+                };
+            });
+
 
             return creditos;
         } catch (error) {
@@ -77,7 +118,6 @@ const creditosAS400 = {
         }
     },
 
-    // Nueva función para contar los créditos sin afectar la consulta original
     async contarCreditosAS400() {
         try {
             const tableACP13 = `COLIB.ACP13`;

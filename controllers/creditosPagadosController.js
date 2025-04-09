@@ -1,4 +1,4 @@
-const { obtenerPagados } = require('../models/creditosPagadosModel');
+const { insertarPagados, obtenerPagados } = require('../models/creditosPagadosModel');
 
 const contarPagados = async (req, res) => {
     try {
@@ -8,26 +8,23 @@ const contarPagados = async (req, res) => {
             return res.status(400).json({ error: 'Las fechas son obligatorias' });
         }
 
-        // Convertir la fecha de inicio a primer día del mes actual
-        const fechaInicioObj = new Date();  // Fecha actual
-        fechaInicioObj.setDate(1);  // Establecer el primer día del mes
+        const fechaInicioObj = new Date();
+        fechaInicioObj.setDate(1);
 
-        // Convertir fecha fin a la fecha de hoy
-        const fechaFinObj = new Date(); // Fecha de hoy (sin modificar)
+        const fechaFinObj = new Date();
 
-        // Convertir las fechas al formato AS400 (1AAMMDD)
         const formatoAS400 = (fecha) => {
             const fechaObj = new Date(fecha);
-            const anioAS400 = (fechaObj.getFullYear() - 1900).toString().slice(-2); // Ej: 2025 → '25'
-            const mes = String(fechaObj.getMonth() + 1).padStart(2, '0'); // Ej: 4 → '04'
-            const dia = String(fechaObj.getDate()).padStart(2, '0'); // Ej: 1 → '01'
+            const anioAS400 = (fechaObj.getFullYear() - 1900).toString().slice(-2);
+            const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+            const dia = String(fechaObj.getDate()).padStart(2, '0');
 
             return `1${anioAS400}${mes}${dia}`;
         };
 
         // Convertir las fechas al formato AS400
-        const fechaInicioAS400 = formatoAS400(fechaInicioObj);  // Primer día del mes
-        const fechaFinAS400 = formatoAS400(fechaFinObj);  // Fecha actual (hoy)
+        const fechaInicioAS400 = formatoAS400(fechaInicioObj);
+        const fechaFinAS400 = formatoAS400(fechaFinObj);
         const pagados = await obtenerPagados(fechaInicioAS400, fechaFinAS400);
         res.json({ pagados });
 
@@ -37,5 +34,24 @@ const contarPagados = async (req, res) => {
     }
 };
 
+const guardarPagado = async (req, res) => {
+    try {
+        const datos = req.body;
+        const resultado = await insertarPagados(datos);
 
-module.exports = { contarPagados };
+        return res.status(resultado.success ? 201 : 409).json({
+            success: resultado.success,
+            message: resultado.message
+        });
+
+    } catch (error) {
+        console.error('❌ Error en guardarPagado:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error al guardar el pagaré pagado.'
+        });
+    }
+};
+
+
+module.exports = { contarPagados, guardarPagado };

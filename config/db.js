@@ -3,7 +3,7 @@ const odbc = require('odbc');
 
 // Configuración de conexiones ODBC
 const connectionStringAS400 = `DSN=${process.env.ODBC_DSN};UID=${process.env.ODBC_USER};PWD=${process.env.ODBC_PASSWORD};CCSID=1208`;
-const connectionStringPagares = `DSN=${process.env.ODBC_DSN_PAGARE};UID=${process.env.ODBC_USERPAGARE};PWD=${process.env.ODBC_PASSWORDPAGARE};CCSID=1208`;
+const connectionStringPagares = `DSN=${process.env.ODBC_DSN_PAGARE};UID=${process.env.ODBC_USERPAGARE};PWD=${process.env.ODBC_PASSWORDPAGARE};CHARSET=UTF8`;
 
 let connectionAS400;
 let connectionPagares;
