@@ -1,4 +1,4 @@
-const { insertarPagados, obtenerPagados } = require('../models/creditosPagadosModel');
+const { insertarPagados, obtenerPagados, obtenerCreditosTesoreria } = require('../models/creditosPagadosModel');
 
 const contarPagados = async (req, res) => {
     try {
@@ -53,5 +53,13 @@ const guardarPagado = async (req, res) => {
     }
 };
 
+const verCreditosTesoreria = async (req, res) => {
+    try {
+        const data = await obtenerCreditosTesoreria();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los créditos en tesorería' });
+    }
+};
 
-module.exports = { contarPagados, guardarPagado };
+module.exports = { contarPagados, guardarPagado, verCreditosTesoreria };

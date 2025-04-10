@@ -122,8 +122,48 @@ const insertarPagados = async (datos) => {
     }
 };
 
+const obtenerCreditosTesoreria = async () => {
+    try {
+        const query = `
+            SELECT 
+              centroCosto,
+              agencia,
+              cuenta,
+              cedula,
+              nombre,
+              score,
+              edad,
+              analisis,
+              fecha_analisis,
+              estado_analisis,
+              pagare,
+              fecha_credito,
+              linea,
+              recogida,
+              capital,
+              tasa,
+              nomina,
+              estado,
+              medioPago,
+              fecha_pago,
+              usuario_pagador
+            FROM creditos_pagados
+            WHERE estado = 2
+        `;
+
+        const resultado = await executeQuery(query, [], 'PAGARES');
+        return resultado;
+
+    } catch (error) {
+        console.error('❌ Error en obtenerCreditosTesoreria:', error);
+        throw error;
+    }
+};
 
 module.exports = {
     obtenerPagados,
-    insertarPagados
+    insertarPagados,
+    obtenerCreditosTesoreria
 };
+
+
