@@ -1,4 +1,4 @@
-const { insertarPagados, obtenerPagados, obtenerCreditosTesoreria } = require('../models/creditosPagadosModel');
+const { insertarPagados, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados } = require('../models/creditosPagadosModel');
 
 const contarPagados = async (req, res) => {
     try {
@@ -56,10 +56,64 @@ const guardarPagado = async (req, res) => {
 const verCreditosTesoreria = async (req, res) => {
     try {
         const data = await obtenerCreditosTesoreria();
-        res.json(data);
+
+        const dataLimpia = data.map((item) => {
+            const nuevoItem = {};
+            for (const key in item) {
+                const valor = item[key];
+                // Si es string, aplicar trim
+                nuevoItem[key] = typeof valor === 'string' ? valor.trim() : valor;
+            }
+            return nuevoItem;
+        });
+
+        res.json(dataLimpia);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los créditos en tesorería' });
     }
 };
 
-module.exports = { contarPagados, guardarPagado, verCreditosTesoreria };
+const verCreditosTesoreriaTerceros = async (req, res) => {
+    try {
+        const data = await obtenerCreditosTesoreriaTerceros();
+
+        const dataLimpia = data.map((item) => {
+            const nuevoItem = {};
+            for (const key in item) {
+                const valor = item[key];
+                // Si es string, aplicar trim
+                nuevoItem[key] = typeof valor === 'string' ? valor.trim() : valor;
+            }
+            return nuevoItem;
+        });
+
+        res.json(dataLimpia);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los créditos en tesorería' });
+    }
+};
+
+const verpagoApoderados = async (req, res) => {
+    try {
+        const data = await pagoApoderados();
+
+        // Limpiar los datos
+        const dataLimpia = data.map((item) => {
+            const nuevoItem = {};
+            for (const key in item) {
+                const valor = item[key];
+                // Si es string, aplicar trim
+                nuevoItem[key] = typeof valor === 'string' ? valor.trim() : valor;
+            }
+            return nuevoItem;
+        });
+
+        res.json(dataLimpia);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los pagos de apoderados' });
+    }
+};
+
+
+
+module.exports = { contarPagados, guardarPagado, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados };
