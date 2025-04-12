@@ -253,8 +253,6 @@ const pagoApoderados = async () => {
 };
 
 
-
-
 const getFechaHoyAS400 = () => {
     const hoy = new Date();
     const año = hoy.getFullYear().toString().slice(-2); // últimos 2 dígitos del año
