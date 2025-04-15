@@ -3,7 +3,6 @@ const { executeQuery } = require('../config/db');
 const creditosAS400 = {
     async getCreditosAS400(fechaInicio = null, fechaFin = null, agencia = null) {
         try {
-            // Si las fechas no se reciben, usar las fechas por defecto de la función
             const [lapsoInicio, lapsoFin] = obtenerRangoFechasActual();
             const fechaInicioFinal = fechaInicio || lapsoInicio;
             const fechaFinFinal = fechaFin || lapsoFin;
@@ -13,18 +12,17 @@ const creditosAS400 = {
             const tableACP05 = `COLIB.ACP05`;
             const tableACP06 = `COLIB.ACP06`;
             const tableACP13 = `COLIB.ACP13`;
+            const tableACP16 = `COLIB.ACP16`;
             const tableACP23 = `COLIB.ACP23`;
 
             let filtroAgencia = '';
             const parametros = [fechaInicioFinal, fechaFinFinal];
 
-            // Agregar condición si se pasa la agencia
             if (agencia) {
                 filtroAgencia = ` AND ${tableACP13}.AGOP13 = ? `;
                 parametros.push(agencia);
             }
 
-            // Consulta de créditos en AS400 con filtro opcional por agencia
             const queryCreditosData = `
                 SELECT 
                     ${tableACP03}.DIRE03, 
@@ -33,6 +31,7 @@ const creditosAS400 = {
                     ${tableACP13}.NCTA13, 
                     ${tableACP05}.NNIT05, 
                     ${tableACP05}.DESC05, 
+                    ${tableACP05}.NCTA05,
                     ${tableACP05}.FECN05, 
                     ${tableACP13}.FECI13, 
                     ${tableACP13}.NCRE13, 
@@ -44,13 +43,15 @@ const creditosAS400 = {
                     ${tableACP04}.DESC04, 
                     ${tableACP13}.NANA13, 
                     ${tableACP23}.FECH23, 
-                    ${tableACP23}.STAT23 
+                    ${tableACP23}.STAT23, 
+                    ${tableACP16}.CTRA16
                 FROM 
                     ${tableACP03}, 
                     ${tableACP04}, 
                     ${tableACP05}, 
                     ${tableACP06}, 
                     ${tableACP13}, 
+                    ${tableACP16}, 
                     ${tableACP23} 
                 WHERE 
                     ${tableACP05}.NCTA05 = ${tableACP13}.NCTA13 
@@ -59,15 +60,15 @@ const creditosAS400 = {
                     AND ${tableACP23}.NANA23 = ${tableACP13}.NANA13 
                     AND ${tableACP13}.NCTA13 = ${tableACP23}.NCTA23 
                     AND ${tableACP13}.AGOP13 = ${tableACP03}.DIST03 
+                    AND ${tableACP13}.NCRE13 = ${tableACP16}.NCRE16 
+                    AND ${tableACP13}.NCTA13 = ${tableACP16}.NCTA16 
                     AND ${tableACP13}.TCRE13 <> '74' 
-                    AND ${tableACP13}.FECI13 BETWEEN ? AND ?
+                    AND ${tableACP13}.FECI13 BETWEEN ? AND ? 
                     ${filtroAgencia}
             `;
 
-            // Ejecutar consulta de créditos
             let creditos = await executeQuery(queryCreditosData, parametros);
 
-            // Consulta de Scores en base de datos Pagares
             const queryScores = `SELECT cedula, Score FROM persona`;
             const scores = await executeQuery(queryScores, [], 'Pagares');
 
@@ -76,7 +77,6 @@ const creditosAS400 = {
                 scoresMap[String(parseInt(persona.cedula, 10))] = persona.Score;
             });
 
-            // Consulta de Estados en base de datos Pagares (creditos_pagados)
             const queryEstados = `
                 SELECT cuenta, pagare, estado, MedioPago, fecha_pago, usuario_pagador
                 FROM creditos_pagados
@@ -94,8 +94,6 @@ const creditosAS400 = {
                 };
             });
 
-
-            // Agregar Score y Estado a cada crédito
             creditos = creditos.map(credito => {
                 const key = `${credito.NCTA13}-${credito.NCRE13}`;
                 const estadoData = estadoMap[key];
@@ -109,7 +107,6 @@ const creditosAS400 = {
                     usuario_pagador: estadoData ? estadoData.usuario_pagador : 'No registrado'
                 };
             });
-
 
             return creditos;
         } catch (error) {
@@ -155,28 +152,6 @@ function obtenerRangoFechasActual() {
 
     return [fechaInicio, fechaFin];
 }
-
-// function obtenerRangoLapsos() {
-//     const fechaActual = new Date();
-
-//     // Obtener año y mes actual
-//     const año = fechaActual.getFullYear();
-//     const mes = fechaActual.getMonth() + 1; // Enero es 0, por eso sumamos 1
-
-//     // Calcular el lapso del mes anterior
-//     let mesAnterior = mes - 1;
-//     let añoAnterior = año;
-//     if (mesAnterior === 0) {
-//         mesAnterior = 12;
-//         añoAnterior -= 1;
-//     }
-
-//     // Formato de lapso (AAMM) → 202403 para marzo 2024
-//     const lapsoInicio = parseInt(`${añoAnterior.toString().slice(-2)}${mesAnterior.toString().padStart(2, '0')}`) + 10000;
-//     const lapsoFin = parseInt(`${año.toString().slice(-2)}${mes.toString().padStart(2, '0')}`) + 10000;
-
-//     return [lapsoInicio, lapsoFin];
-// }
 
 
 
