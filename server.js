@@ -17,7 +17,7 @@ const analisisResumen = require('./routes/analisisResumenRoutes');
 const authRoutes = require('./middlewares/authRoutes');
 const creditosNoRegistradosRoutes = require('./routes/creditosNoRegistradosRoutes');
 const agenciaRoutes = require('./routes/analisisConteoParcialRoutes');
-
+const aportesRoutes = require('./routes/devolucionAportesRoutes');
 dotenv.config();
 
 // Configuración de Express
@@ -76,6 +76,8 @@ app.use('/api', analisisResumen);
 app.use('/auth', authRoutes);
 
 app.use('/api', agenciaRoutes);
+
+app.use('/api', aportesRoutes);
 
 // Validar conexión a la base de datos y arrancar el servidor
 const startServer = async () => {
