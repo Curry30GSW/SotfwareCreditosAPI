@@ -52,9 +52,13 @@ const AuthController = {
     async logoutAuditoria(req, res) {
         try {
             const { nombre_usuario, rol } = req.body;
-            const ip = req.body.ip_usuario || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-            console.log('Recibido en logoutAuditoria:', { nombre_usuario, rol, ip });
+            // Obtener la IP del cliente
+            let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+
+            if (ip.startsWith('::ffff:')) {
+                ip = ip.replace('::ffff:', '');
+            }
 
             await authModel.registrarAuditoria({
                 nombre_usuario,
@@ -65,10 +69,11 @@ const AuthController = {
 
             res.status(200).json({ message: 'Auditoría de cierre registrada' });
         } catch (error) {
-            console.error('Error en logoutAuditoria:', error);
+            console.error('❌ Error en logoutAuditoria:', error);
             res.status(500).json({ error: 'Error interno al registrar auditoría' });
         }
     }
+
 
 
 }

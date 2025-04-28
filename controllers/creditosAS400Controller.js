@@ -49,8 +49,17 @@ const contarCreditosAS400 = async (req, res) => {
 
 const registrarAuditoriaEstadoCredito = async (req, res) => {
     try {
-        const { nombre_usuario, rol, ip_usuario, estado, cuenta, pagare } = req.body;
+        const { nombre_usuario, rol, estado, cuenta, pagare } = req.body;
 
+        // Capturar IP real desde la conexión
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress;
+
+        // Limpiar el "::ffff:" si existe
+        if (ip && ip.startsWith('::ffff:')) {
+            ip = ip.replace('::ffff:', '');
+        }
+
+        // Mapear el estado
         const estadoTexto = {
             0: 'NO',
             1: 'SI',
@@ -59,10 +68,11 @@ const registrarAuditoriaEstadoCredito = async (req, res) => {
 
         const detalle_actividad = `La cuenta ${cuenta}, con el pagaré ${pagare}, cambió al estado A: "${estadoTexto}"`;
 
+        // Registrar en la auditoría
         await creditosAS400.registrarAuditoriaCre({
             nombre_usuario,
             rol,
-            ip_usuario,
+            ip_usuario: ip,
             detalle_actividad
         });
 
