@@ -1,4 +1,4 @@
-const { insertarPagados, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados } = require('../models/creditosPagadosModel');
+const { insertarPagados, insertarPagadosLote, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados } = require('../models/creditosPagadosModel');
 
 const contarPagados = async (req, res) => {
     try {
@@ -52,6 +52,27 @@ const guardarPagado = async (req, res) => {
         });
     }
 };
+
+const guardarPagadosLote = async (req, res) => {
+    try {
+        const creditos = req.body;
+
+        const resultado = await insertarPagadosLote(creditos);
+
+        return res.status(resultado.success ? 201 : 400).json({
+            success: resultado.success,
+            message: resultado.message
+        });
+
+    } catch (error) {
+        console.error('❌ Error en guardarPagadosLote:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error al guardar los pagarés pagados en lote.'
+        });
+    }
+};
+
 
 const verCreditosTesoreria = async (req, res) => {
     try {
@@ -116,4 +137,4 @@ const verpagoApoderados = async (req, res) => {
 
 
 
-module.exports = { contarPagados, guardarPagado, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados };
+module.exports = { contarPagados, guardarPagado, guardarPagadosLote, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados };

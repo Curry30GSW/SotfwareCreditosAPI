@@ -122,6 +122,87 @@ const insertarPagados = async (datos) => {
     }
 };
 
+const obtenerExistentes = async (registros) => {
+    const condiciones = registros.map(r => `('${r[2]}', '${r[10]}')`).join(',');
+
+    const consulta = `
+        SELECT cuenta, pagare 
+        FROM creditos_pagados 
+        WHERE (cuenta, pagare) IN (${condiciones})
+    `;
+
+    const resultados = await executeQuery(consulta, [], 'PAGARES');
+
+    return new Set(resultados.map(r => `${r.cuenta}-${r.pagare}`));
+};
+
+const insertarPagadosLote = async (registros) => {
+    try {
+        if (!Array.isArray(registros) || registros.length === 0) {
+            return { success: false, message: 'No hay registros para insertar.' };
+        }
+
+        const valores = registros.map(datos => ([
+            String(datos.centroCosto || '').trim(),
+            String(datos.agencia || '').trim(),
+            String(datos.cuenta || '').trim().toLowerCase(),
+            parseInt(datos.cedula || 0),
+            String(datos.nombre || '').trim(),
+            parseInt(datos.score || 0),
+            parseInt(datos.edad || 0),
+            String(datos.analisis || '').trim(),
+            datos.fecha_analisis || null,
+            parseInt(datos.estado_analisis || 0),
+            String(datos.pagare || '').trim().toLowerCase(),
+            datos.fecha_credito || null,
+            parseInt(datos.linea || 0),
+            datos.recogida || null, // Asegurarse de que sea null si está vacío
+            parseInt(datos.capital || 0),
+            parseFloat(datos.tasa || 0), // Usar parseFloat para tasas
+            String(datos.nomina || '').trim(),
+            parseInt(datos.estado || 0),
+            String(datos.medio_pago || '').trim(),
+            String(datos.usuario || '').trim()
+        ]));
+
+
+        // Paso 1: Obtener existentes
+        const existentes = await obtenerExistentes(valores);
+
+        // Paso 2: Filtrar nuevos
+        const nuevosValores = valores.filter(v => {
+            const clave = `${v[2]}-${v[10]}`; // cuenta - pagare
+            return !existentes.has(clave);
+        });
+
+        if (nuevosValores.length === 0) {
+            return { success: false, message: 'Todos los registros ya existen.' };
+        }
+
+
+        const placeholders = nuevosValores.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(', ');
+
+        const insertQuery = `
+            INSERT INTO creditos_pagados (
+                centroCosto, agencia, cuenta, cedula, nombre, score, edad, analisis, 
+                fecha_analisis, estado_analisis, pagare, fecha_credito, linea, recogida, 
+                capital, tasa, nomina, estado, medioPago, usuario_pagador
+            )
+            VALUES ${placeholders}
+        `;
+
+
+        await executeQuery(insertQuery, nuevosValores.flat(), 'PAGARES');
+
+        return { success: true, message: '✅ Registros insertados exitosamente.' };
+
+    } catch (error) {
+        console.error('❌ Error en insertarPagadosLote:', error);
+        throw error;
+    }
+};
+
+
 const obtenerCreditosTesoreria = async () => {
     try {
 
@@ -265,6 +346,7 @@ const getFechaHoyAS400 = () => {
 module.exports = {
     obtenerPagados,
     insertarPagados,
+    insertarPagadosLote,
     obtenerCreditosTesoreria,
     obtenerCreditosTesoreriaTerceros,
     pagoApoderados

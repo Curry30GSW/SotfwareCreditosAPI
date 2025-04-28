@@ -19,6 +19,7 @@ const creditosNoRegistradosRoutes = require('./routes/creditosNoRegistradosRoute
 const agenciaRoutes = require('./routes/analisisConteoParcialRoutes');
 const aportesRoutes = require('./routes/devolucionAportesRoutes');
 const transError = require('./routes/transferenciasErrorRoutes');
+const auditoriaRoutes = require('./routes/auditoriaRoutes');
 
 dotenv.config();
 
@@ -82,6 +83,8 @@ app.use('/api', agenciaRoutes);
 app.use('/api', aportesRoutes);
 
 app.use('/api', transError);
+
+app.use('/api', auditoriaRoutes);
 
 // Validar conexión a la base de datos y arrancar el servidor
 const startServer = async () => {

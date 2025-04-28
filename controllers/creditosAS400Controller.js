@@ -41,14 +41,40 @@ const getCreditosAS400 = async (req, res) => {
 const contarCreditosAS400 = async (req, res) => {
     try {
         const totalCreditos = await creditosAS400.contarCreditosAS400();
-        res.json({ total: totalCreditos });
+        res.json({ pagados: totalCreditos });
     } catch (error) {
         res.status(500).json({ error: 'Error al contar los créditos' });
     }
 };
 
+const registrarAuditoriaEstadoCredito = async (req, res) => {
+    try {
+        const { nombre_usuario, rol, ip_usuario, estado, cuenta, pagare } = req.body;
+
+        const estadoTexto = {
+            0: 'NO',
+            1: 'SI',
+            2: 'TESORERIA'
+        }[estado] || 'DESCONOCIDO';
+
+        const detalle_actividad = `La cuenta ${cuenta}, con el pagaré ${pagare}, cambió al estado A: "${estadoTexto}"`;
+
+        await creditosAS400.registrarAuditoriaCre({
+            nombre_usuario,
+            rol,
+            ip_usuario,
+            detalle_actividad
+        });
+
+        res.json({ status: 'ok', message: 'Auditoría registrada correctamente' });
+    } catch (error) {
+        console.error('❌ Error al registrar auditoría de estado de crédito:', error);
+        res.status(500).json({ status: 'error', message: 'No se pudo registrar la auditoría' });
+    }
+};
 
 
-module.exports = { getCreditosAS400, contarCreditosAS400 };
+
+module.exports = { getCreditosAS400, contarCreditosAS400, registrarAuditoriaEstadoCredito };
 
 

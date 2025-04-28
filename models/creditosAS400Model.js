@@ -62,8 +62,8 @@ const creditosAS400 = {
                     AND ${tableACP13}.AGOP13 = ${tableACP03}.DIST03 
                     AND ${tableACP13}.NCRE13 = ${tableACP16}.NCRE16 
                     AND ${tableACP13}.NCTA13 = ${tableACP16}.NCTA16 
-                    AND ${tableACP13}.TCRE13 <> '74' 
-                    AND ${tableACP13}.FECI13 BETWEEN ? AND ? 
+                    AND ${tableACP13}.TCRE13 <> '74'
+                    AND ${tableACP13}.FECI13 BETWEEN ? AND ?                     
                     ${filtroAgencia}
             `;
 
@@ -117,27 +117,38 @@ const creditosAS400 = {
 
     async contarCreditosAS400() {
         try {
-            const tableACP13 = `COLIB.ACP13`;
 
             // Obtener el primer día del mes y la fecha actual
             const [lapsoInicio, lapsoFin] = obtenerRangoFechasActual();
 
             const queryCount = `
-                SELECT COUNT(*) AS total
-                FROM ${tableACP13}
-                WHERE CAPI13 > 0
-                AND TCRE13 <> '74'
-                AND FECI13 BETWEEN ? AND ?
+          SELECT COUNT(*) AS TOTAL
+            FROM COLIB.ACP13
+            WHERE CAPI13 > 0
+            AND TCRE13 NOT IN ('60', '74')
+            AND FECI13 BETWEEN ? AND ?
             `;
-
             const result = await executeQuery(queryCount, [lapsoInicio, lapsoFin]);
 
-            return result[0]?.total || 0;
+            return result[0]?.['TOTAL'] || 0;
         } catch (error) {
             console.error('Error al contar los créditos:', error);
             throw error;
         }
-    }
+
+    },
+
+    async registrarAuditoriaCre({ nombre_usuario, rol, ip_usuario, detalle_actividad }) {
+        const query = `
+            INSERT INTO conciliacion_auditoria 
+            (nombre_usuario, rol, ip_usuario, fecha_acceso, hora_acceso, detalle_actividad) 
+            VALUES (?, ?, ?, NOW(), NOW(), ?)
+        `;
+
+        await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
+        ], 'PAGARES');
+
+    },
 };
 
 function obtenerRangoFechasActual() {
