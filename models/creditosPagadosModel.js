@@ -343,13 +343,38 @@ const getFechaHoyAS400 = () => {
     return `1${año}${mes}${dia}`; // ejemplo: 1250409
 };
 
+
+const obtenerCreditosPorCedula = async (cedula) => {
+    try {
+        const query = `
+            SELECT ACP05.DIST05, ACP05.NNIT05, ACP05.DESC05, ACP05.FEVI05, ACP13.NCTA13, ACP13.NCRE13, ACP13.TCRE13, ACP06.DESC06,
+                   ACP13.CAPI13, ACP13.NCUO13, ACP13.FECI13, ACP13.SCAP13, ACP05.INDC05, ACP04.DESC04
+            FROM COLIB.ACP04 ACP04,
+                 COLIB.ACP05 ACP05,
+                 COLIB.ACP06 ACP06,
+                 COLIB.ACP13 ACP13
+            WHERE ACP13.NCTA13 = ACP05.NCTA05
+              AND ACP13.TCRE13 = ACP06.TCRE06
+              AND ACP05.NOMI05 = ACP04.NOMI04
+              AND ACP05.NNIT05 = ?
+        `;
+
+        const resultado = await executeQuery(query, [cedula], 'AS400');
+        return resultado;
+    } catch (error) {
+        console.error('❌ Error en obtenerCreditosPorCedula:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     obtenerPagados,
     insertarPagados,
     insertarPagadosLote,
     obtenerCreditosTesoreria,
     obtenerCreditosTesoreriaTerceros,
-    pagoApoderados
+    pagoApoderados,
+    obtenerCreditosPorCedula
 };
 
 

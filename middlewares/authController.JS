@@ -27,12 +27,14 @@ const AuthController = {
                 { expiresIn: '8h' }
             );
 
-            const ip = req.body.ip_usuario || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+            // Obtener IP limpia
+            const ipCompleta = req.body.ip_usuario || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+            const ip_usuario = ipCompleta.startsWith('::ffff:') ? ipCompleta.replace('::ffff:', '') : ipCompleta;
 
             await authModel.registrarAuditoria({
                 nombre_usuario: user.name.trim().toUpperCase(),
                 rol: user.rol,
-                ip_usuario: ip,
+                ip_usuario,
                 detalle_actividad: 'Inicio de sesión en el sistema'
             });
 
@@ -53,17 +55,14 @@ const AuthController = {
         try {
             const { nombre_usuario, rol } = req.body;
 
-            // Obtener la IP del cliente
-            let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-
-            if (ip.startsWith('::ffff:')) {
-                ip = ip.replace('::ffff:', '');
-            }
+            // Obtener IP limpia (sin body porque no se envía ip_usuario en logout)
+            const ipCompleta = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+            const ip_usuario = ipCompleta.startsWith('::ffff:') ? ipCompleta.replace('::ffff:', '') : ipCompleta;
 
             await authModel.registrarAuditoria({
                 nombre_usuario,
                 rol,
-                ip_usuario: ip,
+                ip_usuario,
                 detalle_actividad: 'Cierre de sesión en el sistema'
             });
 
@@ -73,6 +72,7 @@ const AuthController = {
             res.status(500).json({ error: 'Error interno al registrar auditoría' });
         }
     }
+
 
 
 

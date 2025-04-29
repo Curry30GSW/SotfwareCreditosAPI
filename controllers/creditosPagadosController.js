@@ -1,4 +1,4 @@
-const { insertarPagados, insertarPagadosLote, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados } = require('../models/creditosPagadosModel');
+const { insertarPagados, insertarPagadosLote, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados, obtenerCreditosPorCedula } = require('../models/creditosPagadosModel');
 
 const contarPagados = async (req, res) => {
     try {
@@ -135,6 +135,32 @@ const verpagoApoderados = async (req, res) => {
     }
 };
 
+const getCreditosPorCedula = async (req, res) => {
+    const { cedula } = req.params;
+
+    try {
+        const creditos = await obtenerCreditosPorCedula(cedula);
+
+        if (creditos.length === 0) {
+            return res.status(404).json({ mensaje: 'No se encontraron créditos para esta cédula.' });
+        }
+
+        // Limpiar espacios en los campos tipo string
+        const creditosLimpios = creditos.map(credito => {
+            const limpio = {};
+            for (const key in credito) {
+                const valor = credito[key];
+                limpio[key.trim()] = typeof valor === 'string' ? valor.trim() : valor;
+            }
+            return limpio;
+        });
+
+        res.status(200).json(creditosLimpios);
+    } catch (error) {
+        console.error('❌ Error en el controlador de créditos:', error);
+        res.status(500).json({ mensaje: 'Error al obtener los créditos.', error: error.message });
+    }
+};
 
 
-module.exports = { contarPagados, guardarPagado, guardarPagadosLote, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados };
+module.exports = { contarPagados, guardarPagado, guardarPagadosLote, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados, getCreditosPorCedula };
