@@ -11,7 +11,7 @@ const obtenerAporteSociales = async () => {
                 EMPR16 = '01' AND 
                 CB_CUENTA = NCTA05 AND
                 CB_CUENTA = NCTA16 AND
-                FECH16 = '1250414' AND
+                FECH16 = '1250430' AND
                 cta.CB_BANCO = BN.BN_BANCO AND
                 CBCO16 = 'TB' AND
                 CTRA16 = '5' AND 
@@ -38,7 +38,7 @@ const obtenerAporteOcasionales = async () => {
                 EMPR16 = '01' AND 
                 CB_CUENTA = NCTA05 AND
                 CB_CUENTA = NCTA16 AND
-                FECH16 = '1250414' AND
+                FECH16 = '1250430' AND
                 cta.CB_BANCO = BN.BN_BANCO AND
                 CBCO16 = 'TB' AND
                 CTRA16 = '5' AND 
