@@ -78,7 +78,7 @@ const creditosAS400 = {
             });
 
             const queryEstados = `
-                SELECT cuenta, pagare, estado, MedioPago, fecha_pago, usuario_pagador
+                SELECT cuenta, pagare, estado, MedioPago, fecha_pago, motivo, usuario_pagador
                 FROM creditos_pagados
             `;
             const estados = await executeQuery(queryEstados, [], 'Pagares');
@@ -90,6 +90,7 @@ const creditosAS400 = {
                     estado: e.estado,
                     medioPago: e.MedioPago,
                     fecha_pago: e.fecha_pago,
+                    motivo: e.motivo,
                     usuario_pagador: e.usuario_pagador
                 };
             });
@@ -104,6 +105,7 @@ const creditosAS400 = {
                     Estado: estadoData ? estadoData.estado : 'Desconocido',
                     MedioPago: estadoData ? estadoData.medioPago : 'No registrado',
                     fecha_pago: estadoData ? estadoData.fecha_pago : 'No registrado',
+                    motivo: estadoData ? estadoData.motivo : 'No registrado',
                     usuario_pagador: estadoData ? estadoData.usuario_pagador : 'No registrado'
                 };
             });

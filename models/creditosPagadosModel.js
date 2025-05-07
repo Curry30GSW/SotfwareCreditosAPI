@@ -44,6 +44,7 @@ const insertarPagados = async (datos) => {
             nomina: String(datos.nomina || '').trim(),
             estado: parseInt(datos.estado || 0),
             medio_pago: String(datos.medio_pago || '').trim(),
+            motivo: String(datos.motivo || '').trim(),
             usuario_pagador: String(datos.usuario || '').trim(),
 
         };
@@ -71,11 +72,11 @@ const insertarPagados = async (datos) => {
             // Solo si es diferente, actualizamos
             const updateQuery = `
                 UPDATE creditos_pagados
-                SET estado = ?, medioPago = ?, usuario_pagador = ?
+                SET estado = ?, medioPago = ?, usuario_pagador = ?, motivo= ?
                 WHERE LOWER(TRIM(cuenta)) = ? AND LOWER(TRIM(pagare)) = ?
 
             `;
-            await executeQuery(updateQuery, [normalizado.estado, normalizado.medio_pago, normalizado.usuario_pagador, cuenta, pagare], 'PAGARES');
+            await executeQuery(updateQuery, [normalizado.estado, normalizado.medio_pago, normalizado.usuario_pagador, normalizado.motivo, cuenta, pagare], 'PAGARES');
 
             return { success: true, message: '🔁 Estado actualizado correctamente.' };
         }
@@ -85,8 +86,8 @@ const insertarPagados = async (datos) => {
             INSERT INTO creditos_pagados (
                 centroCosto, agencia, cuenta, cedula, nombre, score, edad, analisis, 
                 fecha_analisis, estado_analisis, pagare, fecha_credito, linea, recogida, 
-                capital, tasa, nomina, estado, medioPago, usuario_pagador
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                capital, tasa, nomina, estado, medioPago, motivo, usuario_pagador
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const valores = [
@@ -109,6 +110,7 @@ const insertarPagados = async (datos) => {
             normalizado.nomina,
             normalizado.estado,
             normalizado.medio_pago,
+            normalizado.motivo,
             normalizado.usuario_pagador
         ];
 
@@ -211,7 +213,7 @@ const obtenerCreditosTesoreria = async () => {
         const query = `
             SELECT ACP05.DIST05, ACP03.DESC03, cta.CB_TID, cta.CB_ID, cta.CB_CUENTA, cta.CB_BANCO, BN.BN_DESCR, 
                    cta.CB_CTABCO, cta.CB_TIPO, cta.CB_FECHA, cta.CB_ESTADO, cta.CB_NOMBRE, cta.CB_MAIL, 
-                   cta.CB_CIUDAD, ACP16.NCTA16, ACP16.SCAP16, ACP16.CBCO16, ACP16.CTRA16, ACP16.TTRA16
+                   cta.CB_CIUDAD, ACP16.NCTA16, ACP16.NCRE16, ACP16.SCAP16, ACP16.CBCO16, ACP16.CTRA16, ACP16.TTRA16
             FROM COLIB.ACP03 ACP03, 
                  COLIB.ACP05 ACP05, 
                  COLIB.ACP16 ACP16, 

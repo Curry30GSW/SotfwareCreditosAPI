@@ -20,6 +20,7 @@ const agenciaRoutes = require('./routes/analisisConteoParcialRoutes');
 const aportesRoutes = require('./routes/devolucionAportesRoutes');
 const transError = require('./routes/transferenciasErrorRoutes');
 const auditoriaRoutes = require('./routes/auditoriaRoutes');
+const actaCreditosRoutes = require('./routes/actaCreditosRoutes');
 
 dotenv.config();
 
@@ -74,6 +75,8 @@ app.use('/api', analisisConteo);
 app.use('/api', detallesAnalisis);
 
 app.use('/api', analisisResumen);
+
+app.use('/api', actaCreditosRoutes);
 
 //Ruta Login
 app.use('/auth', authRoutes);
