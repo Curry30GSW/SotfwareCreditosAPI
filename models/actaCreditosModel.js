@@ -35,7 +35,7 @@ const obtenerActaVirtuales = async () => {
                 ACP13.NCRE13 = ACP16.NCRE16 AND 
                 ACP13.NANA13 = ACTACRED.ANALISIS AND 
                 ACP13.NCTA13 = ACTACRED.CUENTA AND 
-                ACP13.FECI13 = 1250507 AND 
+                ACP13.FECI13 = ${fechaAS400} AND 
                 ACP16.CTRA16 = '5'
         `;
 
@@ -89,7 +89,7 @@ const obtenerActaTerceros = async () => {
                 ACP16.HORA16 = ACP160.HORA16 AND 
                 CTASPROV.CB_ID = ACP160.DET116 AND 
                 ACP160.DET416 = CTASPROV.CB_CTABCO AND 
-                ACP13.FECI13 = 1250507 AND 
+                ACP13.FECI13 = ${fechaAS400} AND 
                 ACP16.CTRA16 = '5'
         `;
 
@@ -106,35 +106,34 @@ const obtenerActaExcedencias = async () => {
         const fechaAS400 = getFechaHoyAS400(); // Obtener fecha actual AS400
 
         const query = `
-          SELECT 
-            ACP24.DIST24, 
-            ACP24.NCTA24, 
-            CTA.CB_ID, 
-            ACP05.DESC05, 
-            ACP24.NREI24, 
-            ACP03.DESC03, 
-            ACP24.STAT24, 
-            ACP24.VREI24, 
-            ACP24.FECH24, 
-            ACP24.STAP24,
-            ACP24.FECH24, 
-            CTA.CB_TIPO
-        FROM 
-            C707D8E1.COLIB.ACP05 ACP05, 
-            C707D8E1.COLIB.ACP24 ACP24, 
-            C707D8E1.COLIB.BANCOS BN, 
-            C707D8E1.COLIB.CTASBAN CTA, 
-            C707D8E1.COLIB.ACP03 ACP03
-        WHERE 
-            ACP05.NCTA05 = CTA.CB_CUENTA 
-            AND ACP24.NCTA24 = CTA.CB_CUENTA 
-            AND ACP24.NCTA24 = ACP05.NCTA05 
-            AND CTA.CB_BANCO = BN.BN_BANCO 
-            AND ACP24.DIST24 = ACP03.DIST03 
-            AND ACP24.FECH24 = 1250507
-            AND ACP24.STAP24 = '5'
-
-
+            SELECT ACP05.DIST05, ACP03.DESC03, cta.CB_TID, cta.CB_ID, cta.CB_CUENTA, cta.CB_BANCO, BN.BN_DESCR, 
+                   cta.CB_CTABCO, cta.CB_TIPO, cta.CB_FECHA, cta.CB_ESTADO, cta.CB_NOMBRE, cta.CB_MAIL, 
+                   cta.CB_CIUDAD, ACP16.NCTA16, ACP16.NCRE16, ACP16.SCAP16, ACP16.CBCO16, ACP16.CTRA16, ACP16.TTRA16, ACP16.FECH16, ACP16.CTRA16
+            FROM COLIB.ACP03 ACP03, 
+                 COLIB.ACP05 ACP05, 
+                 COLIB.ACP16 ACP16, 
+                 COLIB.ACP160 ACP160, 
+                 COLIB.BANCOS BN, 
+                 COLIB.CTASBAN cta
+            WHERE 
+                ACP05.DIST05 = ACP03.DIST03 AND 
+                ACP16.EMPR16 = '01' AND 
+                ACP16.FECH16 = ACP160.FECH16 AND 
+                ACP16.FECH16 = ${fechaAS400} AND 
+                ACP16.HORA16 = ACP160.HORA16 AND 
+                ACP16.AGEN16 = ACP160.AGEN16 AND 
+                cta.CB_CUENTA = NCTA05 AND 
+                cta.CB_CUENTA = ACP16.NCTA16 AND 
+                cta.CB_ESTADO = 0 AND 
+                ACP16.NDOC16 = '' AND 
+                ACP16.SCAP16 > 0 AND 
+                cta.CB_BANCO = BN.BN_BANCO AND 
+                ACP16.CBCO16 = 'TB' AND 
+                ACP160.DET116 = '' AND 
+                ACP16.CTRA16 = '5' AND 
+                ACP16.NCTA16 NOT IN ('110384') AND 
+                ACP16.TTRA16 IN ('DA','DE','RE')
+            ORDER BY ACP05.DIST05, cta.CB_CUENTA
         `;
 
         const resultado = await executeQuery(query, [], 'AS400');
@@ -144,6 +143,7 @@ const obtenerActaExcedencias = async () => {
         throw error;
     }
 };
+
 
 
 const getFechaHoyAS400 = () => {
