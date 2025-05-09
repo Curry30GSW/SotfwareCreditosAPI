@@ -19,6 +19,7 @@ const creditosNoRegistradosRoutes = require('./routes/creditosNoRegistradosRoute
 const agenciaRoutes = require('./routes/analisisConteoParcialRoutes');
 const aportesRoutes = require('./routes/devolucionAportesRoutes');
 const transError = require('./routes/transferenciasErrorRoutes');
+const creditosCedulaRoutes = require('./routes/creditosCedulaRoutes');
 const auditoriaRoutes = require('./routes/auditoriaRoutes');
 const actaCreditosRoutes = require('./routes/actaCreditosRoutes');
 
@@ -88,6 +89,7 @@ app.use('/api', aportesRoutes);
 app.use('/api', transError);
 
 app.use('/api', auditoriaRoutes);
+app.use('/api', creditosCedulaRoutes);
 
 // Validar conexión a la base de datos y arrancar el servidor
 const startServer = async () => {

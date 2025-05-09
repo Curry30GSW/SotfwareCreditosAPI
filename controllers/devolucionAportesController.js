@@ -1,4 +1,4 @@
-const { obtenerAporteSociales, obtenerAporteOcasionales } = require('../models/devolucionAportesModel');
+const { obtenerAporteSociales, obtenerAporteOcasionales, registrarAuditoriaMod } = require('../models/devolucionAportesModel');
 
 const verAportesSociales = async (req, res) => {
     try {
@@ -38,7 +38,39 @@ const verAportesOcasionales = async (req, res) => {
     }
 };
 
+const registrarAuditoriaModulo = async (req, res) => {
+
+    try {
+        const { nombre_usuario, rol } = req.body;
+
+        // Capturar IP real desde la conexión
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress;
+
+        // Limpiar el "::ffff:" si existe
+        if (ip && ip.startsWith('::ffff:')) {
+            ip = ip.replace('::ffff:', '');
+        }
+
+        const detalle_actividad = `${nombre_usuario} ingreso al modulo DEVOLUCION DE APO `;
+
+         // Registrar en la auditoría
+     await registrarAuditoriaMod(
+        nombre_usuario,
+        rol,
+        ip,
+        detalle_actividad
+    );
+    res.json({ status: 'ok', message: 'Auditoría registrada correctamente' });
+    } catch(error){
+        console.error('❌ Error al registrar auditoría de estado de crédito:', error);
+        res.status(500).json({ status: 'error', message: 'No se pudo registrar la auditoría' });
+    }
+ 
+
+}
+
 module.exports = {
     verAportesSociales,
-    verAportesOcasionales
+    verAportesOcasionales,
+    registrarAuditoriaModulo
 };

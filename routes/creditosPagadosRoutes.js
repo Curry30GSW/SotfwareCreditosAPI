@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { contarPagados, guardarPagado, guardarPagadosLote, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados, getCreditosPorCedula } = require('../controllers/creditosPagadosController');
+const { contarPagados, guardarPagado, guardarPagadosLote, verCreditosTesoreria, verCreditosTesoreriaTerceros, verpagoApoderados, getCreditosPorCedula,registrarAuditoriaModulo } = require('../controllers/creditosPagadosController');
 const verifyToken = require('../middlewares/authMiddleware.js');
 
 router.get('/pagados/creditos', verifyToken, contarPagados);
@@ -10,5 +10,6 @@ router.get('/obtener/pagados', verifyToken, verCreditosTesoreria);
 router.get('/obtener/pagados-terceros', verifyToken, verCreditosTesoreriaTerceros);
 router.get('/obtener/apoderados', verifyToken, verpagoApoderados);
 router.get('/creditos/:cedula', getCreditosPorCedula);
+router.post('/auditoria/moduloPT', verifyToken, registrarAuditoriaModulo);
 
 module.exports = router;
