@@ -175,21 +175,21 @@ const registrarAuditoriaModulo = async (req, res) => {
             ip = ip.replace('::ffff:', '');
         }
 
-        const detalle_actividad = `${nombre_usuario} ingreso al modulo TESORERIA `;
+        const detalle_actividad = `${nombre_usuario} ingresó al modulo TESORERIA `;
 
-         // Registrar en la auditoría
-     await registrarAuditoriaMod(
-        nombre_usuario,
-        rol,
-        ip,
-        detalle_actividad
-    );
-    res.json({ status: 'ok', message: 'Auditoría registrada correctamente' });
-    } catch(error){
+        // Registrar en la auditoría
+        await registrarAuditoriaMod(
+            nombre_usuario,
+            rol,
+            ip,
+            detalle_actividad
+        );
+        res.json({ status: 'ok', message: 'Auditoría registrada correctamente' });
+    } catch (error) {
         console.error('❌ Error al registrar auditoría de estado de crédito:', error);
         res.status(500).json({ status: 'error', message: 'No se pudo registrar la auditoría' });
     }
- 
+
 
 }
 
