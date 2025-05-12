@@ -45,6 +45,7 @@ const insertarPagados = async (datos) => {
             estado: parseInt(datos.estado || 0),
             medio_pago: String(datos.medio_pago || '').trim(),
             motivo: String(datos.motivo || '').trim(),
+            comprobante: String(datos.comprobante || '').trim(),
             usuario_pagador: String(datos.usuario || '').trim(),
 
         };
@@ -86,8 +87,8 @@ const insertarPagados = async (datos) => {
             INSERT INTO creditos_pagados (
                 centroCosto, agencia, cuenta, cedula, nombre, score, edad, analisis, 
                 fecha_analisis, estado_analisis, pagare, fecha_credito, linea, recogida, 
-                capital, tasa, nomina, estado, medioPago, motivo, usuario_pagador
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                capital, tasa, nomina, estado, medioPago, motivo, comprobante, usuario_pagador
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const valores = [
@@ -111,6 +112,7 @@ const insertarPagados = async (datos) => {
             normalizado.estado,
             normalizado.medio_pago,
             normalizado.motivo,
+            normalizado.comprobante,
             normalizado.usuario_pagador
         ];
 
@@ -371,13 +373,13 @@ const obtenerCreditosPorCedula = async (cedula) => {
     }
 };
 
-const registrarAuditoriaMod = async (nombre_usuario, rol, ip_usuario, detalle_actividad ) =>{
+const registrarAuditoriaMod = async (nombre_usuario, rol, ip_usuario, detalle_actividad) => {
     const query = `INSERT INTO conciliacion_auditoria 
         (nombre_usuario, rol, ip_usuario, fecha_acceso, hora_acceso, detalle_actividad) 
         VALUES (?, ?, ?, NOW(), NOW(), ?)
         `;
-        
-        await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
+
+    await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
 
     ], 'PAGARES')
 
