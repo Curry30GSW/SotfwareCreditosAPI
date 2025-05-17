@@ -78,7 +78,7 @@ const creditosAS400 = {
             });
 
             const queryEstados = `
-                SELECT cuenta, pagare, estado, MedioPago, fecha_pago, motivo, usuario_pagador
+                SELECT cuenta, pagare, estado, MedioPago, fecha_pago, motivo, comprobante, usuario_pagador
                 FROM creditos_pagados
             `;
             const estados = await executeQuery(queryEstados, [], 'Pagares');
@@ -89,6 +89,7 @@ const creditosAS400 = {
                 estadoMap[key] = {
                     estado: e.estado,
                     medioPago: e.MedioPago,
+                    comprobante: e.comprobante,
                     fecha_pago: e.fecha_pago,
                     motivo: e.motivo,
                     usuario_pagador: e.usuario_pagador
@@ -102,11 +103,12 @@ const creditosAS400 = {
                 return {
                     ...credito,
                     Score: scoresMap[String(parseInt(credito.NNIT05, 10))] || 'F/D',
-                    Estado: estadoData ? estadoData.estado : 'Desconocido',
-                    MedioPago: estadoData ? estadoData.medioPago : 'No registrado',
-                    fecha_pago: estadoData ? estadoData.fecha_pago : 'No registrado',
-                    motivo: estadoData ? estadoData.motivo : 'No registrado',
-                    usuario_pagador: estadoData ? estadoData.usuario_pagador : 'No registrado'
+                    Estado: estadoData ? estadoData.estado : 'DESCONOCIDO',
+                    MedioPago: estadoData ? estadoData.medioPago : 'NO REGISTRADO',
+                    comprobante: estadoData ? estadoData.comprobante : '',
+                    fecha_pago: estadoData ? estadoData.fecha_pago : 'NO REGISTRADO',
+                    motivo: estadoData ? estadoData.motivo : 'NO REGISTRADO',
+                    usuario_pagador: estadoData ? estadoData.usuario_pagador : 'NO REGISTRADO'
                 };
             });
 
@@ -152,13 +154,13 @@ const creditosAS400 = {
 
     },
 
-    async registrarAuditoriaMod({nombre_usuario, rol, ip_usuario, detalle_actividad}){
+    async registrarAuditoriaMod({ nombre_usuario, rol, ip_usuario, detalle_actividad }) {
         const query = `INSERT INTO conciliacion_auditoria 
             (nombre_usuario, rol, ip_usuario, fecha_acceso, hora_acceso, detalle_actividad) 
             VALUES (?, ?, ?, NOW(), NOW(), ?)
             `;
-            
-            await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
+
+        await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
 
         ], 'PAGARES')
 

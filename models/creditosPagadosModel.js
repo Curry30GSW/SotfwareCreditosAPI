@@ -73,11 +73,11 @@ const insertarPagados = async (datos) => {
             // Solo si es diferente, actualizamos
             const updateQuery = `
                 UPDATE creditos_pagados
-                SET estado = ?, medioPago = ?, usuario_pagador = ?, motivo= ?
+                SET estado = ?, medioPago = ?, usuario_pagador = ?, motivo= ?, comprobante= ?
                 WHERE LOWER(TRIM(cuenta)) = ? AND LOWER(TRIM(pagare)) = ?
 
             `;
-            await executeQuery(updateQuery, [normalizado.estado, normalizado.medio_pago, normalizado.usuario_pagador, normalizado.motivo, cuenta, pagare], 'PAGARES');
+            await executeQuery(updateQuery, [normalizado.estado, normalizado.medio_pago, normalizado.usuario_pagador, normalizado.motivo, normalizado.comprobante, cuenta, pagare], 'PAGARES');
 
             return { success: true, message: '🔁 Estado actualizado correctamente.' };
         }
@@ -125,6 +125,21 @@ const insertarPagados = async (datos) => {
         throw error;
     }
 };
+
+const buscarCreditoPorCedula = async (cedula) => {
+    try {
+        const query = `
+            SELECT estado, comprobante
+            FROM creditos_pagados
+            WHERE cedula = ? LIMIT 1
+        `;
+        const resultado = await executeQuery(query, [cedula], 'PAGARES');
+        return resultado[0] || null;
+    } catch (error) {
+        console.log(' Error en buscarCreditoPorCedula', error);
+        throw error;
+    }
+}
 
 const obtenerExistentes = async (registros) => {
     const condiciones = registros.map(r => `('${r[2]}', '${r[10]}')`).join(',');
@@ -388,12 +403,14 @@ const registrarAuditoriaMod = async (nombre_usuario, rol, ip_usuario, detalle_ac
 module.exports = {
     obtenerPagados,
     insertarPagados,
+    buscarCreditoPorCedula,
     insertarPagadosLote,
     obtenerCreditosTesoreria,
     obtenerCreditosTesoreriaTerceros,
     pagoApoderados,
     obtenerCreditosPorCedula,
-    registrarAuditoriaMod
+    registrarAuditoriaMod,
+
 };
 
 

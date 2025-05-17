@@ -1,4 +1,5 @@
-const { insertarPagados, insertarPagadosLote, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados, obtenerCreditosPorCedula, registrarAuditoriaMod } = require('../models/creditosPagadosModel');
+const { insertarPagados, buscarCreditoPorCedula, insertarPagadosLote, obtenerPagados, obtenerCreditosTesoreria, obtenerCreditosTesoreriaTerceros, pagoApoderados, obtenerCreditosPorCedula, registrarAuditoriaMod } = require('../models/creditosPagadosModel');
+const path = require('path');
 
 const contarPagados = async (req, res) => {
     try {
@@ -36,13 +37,55 @@ const contarPagados = async (req, res) => {
 
 const guardarPagado = async (req, res) => {
     try {
+        console.log('📌 Punto 1: req.body =>', req.body)
+
         const datos = req.body;
+        const cedula = req.body.cedula;
+
+        if (!cedula) {
+            return res.status(400).json({ error: 'Cédula no proporcionada' });
+        }
+
+        // 1. Buscar si ya hay un comprobante existente para ese crédito
+        const creditoExistente = await buscarCreditoPorCedula(cedula);
+
+        if (creditoExistente && creditoExistente.comprobante && req.file) {
+            // Si ya existe comprobante y el estado es "si", no se permite reemplazo
+            return res.status(400).json({
+                success: false,
+                message: 'Ya se subió un comprobante para este crédito aprobado.'
+            });
+        }
+
+        // 2 
+        if (req.file) {
+            const fs = require('fs');
+            const oldPath = req.file.path;
+            const newFilename = `comprobante-${cedula}${path.extname(req.file.originalname)}`;
+            const newPath = path.join(req.file.destination, newFilename);
+
+            await fs.promises.rename(oldPath, newPath);
+
+            req.body.comprobante = newFilename; // Ruta relativa para mostrar
+
+            // Renombrar el archivo
+            // fs.rename(oldPath, newPath, (err) => {
+            //     if (err) {
+            //         return res.status(500).json({ error: 'Error al renombrar el archivo' });
+            //     }
+
+            //     res.json({ mensaje: 'Archivo subido correctamente', archivo: newFilename });
+            // });    
+        }
+
+        // se insertar el credto
         const resultado = await insertarPagados(datos);
 
-        return res.status(resultado.success ? 201 : 409).json({
+        return res.status(resultado.success ? 201 : 400).json({
             success: resultado.success,
             message: resultado.message
         });
+
 
     } catch (error) {
         console.error('❌ Error en guardarPagado:', error);

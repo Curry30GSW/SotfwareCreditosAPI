@@ -29,7 +29,9 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+const path = require('path');
 
+app.use('/soporteComprobantes', express.static(path.join(__dirname, 'soporteComprobantes')));
 
 
 app.use(cors({

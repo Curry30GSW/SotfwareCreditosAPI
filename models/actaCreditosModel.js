@@ -6,7 +6,7 @@ const obtenerActaVirtuales = async () => {
         const fechaAS400 = getFechaHoyAS400(); // Obtener fecha actual AS400
 
         const query = `
-            SELECT 
+                    SELECT 
                 ACP05.DIST05, 
                 ACP05.NCTA05, 
                 ACP03.DESC03, 
@@ -23,11 +23,11 @@ const obtenerActaVirtuales = async () => {
                 ACTACRED.POSICION, 
                 SCAP13 - SSEG13 - VFOG13 - INTP13 - CAAP13 - ESCR13 - REOR13 - REES13 - REOC13 - CHGI13 - ORSU13 + (OTRO13 + SIMO13) AS DESEMBOLSO
             FROM 
-                C707D8E1.COLIB.ACP03 ACP03, 
-                C707D8E1.COLIB.ACP05 ACP05, 
-                C707D8E1.COLIB.ACP13 ACP13, 
-                C707D8E1.COLIB.ACP16 ACP16, 
-                C707D8E1.COLIB.ACTACRED ACTACRED
+                COLIB.ACP03 ACP03, 
+                COLIB.ACP05 ACP05, 
+                COLIB.ACP13 ACP13, 
+                COLIB.ACP16 ACP16, 
+                COLIB.ACTACRED ACTACRED
             WHERE 
                 ACP05.NCTA05 = ACP13.NCTA13 AND 
                 ACP03.DIST03 = ACP05.DIST05 AND 
@@ -35,6 +35,7 @@ const obtenerActaVirtuales = async () => {
                 ACP13.NCRE13 = ACP16.NCRE16 AND 
                 ACP13.NANA13 = ACTACRED.ANALISIS AND 
                 ACP13.NCTA13 = ACTACRED.CUENTA AND 
+                ACTACRED.ACTA NOT IN ('20231009') AND
                 ACP13.FECI13 = ${fechaAS400} AND 
                 ACP16.CTRA16 = '5'
         `;
@@ -155,13 +156,13 @@ const getFechaHoyAS400 = () => {
     return `1${año}${mes}${dia}`; // ejemplo: 1250505
 };
 
-const registrarAuditoriaMod = async (nombre_usuario, rol, ip_usuario, detalle_actividad) =>{
+const registrarAuditoriaMod = async (nombre_usuario, rol, ip_usuario, detalle_actividad) => {
     const query = `INSERT INTO conciliacion_auditoria 
         (nombre_usuario, rol, ip_usuario, fecha_acceso, hora_acceso, detalle_actividad) 
         VALUES (?, ?, ?, NOW(), NOW(), ?)
         `;
-        
-        await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
+
+    await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
 
     ], 'PAGARES')
 
