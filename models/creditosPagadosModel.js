@@ -175,7 +175,7 @@ const insertarPagadosLote = async (registros) => {
             String(datos.pagare || '').trim().toLowerCase(),
             datos.fecha_credito || null,
             parseInt(datos.linea || 0),
-            datos.recogida || null, // Asegurarse de que sea null si está vacío
+            datos.recogida || 0, // Asegurarse de que sea null si está vacío
             parseInt(datos.capital || 0),
             parseFloat(datos.tasa || 0), // Usar parseFloat para tasas
             String(datos.nomina || '').trim(),

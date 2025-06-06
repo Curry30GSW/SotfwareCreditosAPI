@@ -27,12 +27,6 @@ dotenv.config();
 
 // Configuración de Express
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
-const path = require('path');
-
-app.use('/soporteComprobantes', express.static(path.join(__dirname, 'soporteComprobantes')));
-
 
 app.use(cors({
     origin: "http://127.0.0.1:5500", // Debes usar el frontend correcto
@@ -40,6 +34,16 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true  // 🛑 Habilita las cookies en CORS
 }));
+
+
+
+
+app.use(express.json());
+app.use(cookieParser());
+const path = require('path');
+
+app.use('/soporteComprobantes', express.static(path.join(__dirname, 'soporteComprobantes')));
+
 
 
 
