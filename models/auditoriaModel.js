@@ -12,4 +12,18 @@ const getAuditoria = async () => {
     }
 };
 
-module.exports = { getAuditoria };
+
+
+const registrarAuditoriaDes = async (nombre_usuario, rol, ip_usuario, detalle_actividad) => {
+    const query = `INSERT INTO conciliacion_auditoria 
+            (nombre_usuario, rol, ip_usuario, fecha_acceso, hora_acceso, detalle_actividad) 
+            VALUES (?, ?, ?, NOW(), NOW(), ?)
+            `;
+
+    await executeQuery(query, [nombre_usuario, rol, ip_usuario, detalle_actividad
+    ], 'PAGARES')
+    return query;
+
+}
+
+module.exports = { getAuditoria, registrarAuditoriaDes };

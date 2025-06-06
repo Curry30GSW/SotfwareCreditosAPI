@@ -238,12 +238,18 @@ async function obtenerDetallesTres(agen23) {
 
 function obtenerRangoFechasActual() {
     const hoy = new Date();
-    const añoAs400 = `1${(hoy.getFullYear() - 1900).toString().slice(-2)}`;
-    const mesStr = String(hoy.getMonth() + 1).padStart(2, '0');
-    const diaStr = String(hoy.getDate()).padStart(2, '0');
 
-    const fechaInicio = `1250401`;
-    const fechaFin = `${añoAs400}${mesStr}${diaStr}`;
+    const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    const añoInicio = `1${(primerDiaMes.getFullYear() - 1900).toString().slice(-2)}`;
+    const mesInicio = String(primerDiaMes.getMonth() + 1).padStart(2, '0');
+    const diaInicio = '01'; // Siempre día 1
+
+    const añoFin = `1${(hoy.getFullYear() - 1900).toString().slice(-2)}`;
+    const mesFin = String(hoy.getMonth() + 1).padStart(2, '0');
+    const diaFin = String(hoy.getDate()).padStart(2, '0');
+
+    const fechaInicio = `${añoInicio}${mesInicio}${diaInicio}`;
+    const fechaFin = `${añoFin}${mesFin}${diaFin}`;
 
     return [fechaInicio, fechaFin];
 }
